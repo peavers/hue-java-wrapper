@@ -35,7 +35,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: lib/build/libs
+          path: |
+            lib/build/libs
+            lib/build/classes
 
   test:
     needs: build
@@ -80,7 +82,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: lib/build/reports # Match the expected path structure
+          path: lib/build/reports
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -90,7 +92,7 @@ jobs:
           fail_ci_if_error: true
 
   sonarqube:
-    needs: test
+    needs: [build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -107,18 +109,28 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: lib/build
+
       - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: lib/build/reports # Match the expected path structure
+          path: lib/build/reports
 
       - name: Sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: ./gradlew :lib:sonar --info
+        run: |
+          ./gradlew :lib:sonar --info \
+            -Dsonar.java.binaries=lib/build/classes/java/main \
+            -Dsonar.java.test.binaries=lib/build/classes/java/test \
+            -Dsonar.coverage.jacoco.xmlReportPaths=lib/build/reports/jacoco/test/jacocoTestReport.xml
 
   publish:
     needs: [test, sonarqube, codecov]
