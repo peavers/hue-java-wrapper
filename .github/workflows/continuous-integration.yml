@@ -110,7 +110,7 @@ jobs:
       - name: Upload to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: ./gradlew :lib:coverallsJacoco
+        run: ./gradlew :lib:coveralls
 
   sonarqube:
     needs: [build, test]
