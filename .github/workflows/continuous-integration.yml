@@ -83,6 +83,35 @@ jobs:
           file: lib/build/reports/jacoco/test/jacocoTestReport.xml
           fail_ci_if_error: true
 
+  coveralls:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: lib/build/reports
+
+      - name: Upload to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: ./gradlew :lib:coverallsJacoco
+
   sonarqube:
     needs: [build, test]
     runs-on: ubuntu-latest
@@ -115,7 +144,7 @@ jobs:
         run: ./gradlew :lib:build :lib:sonar --info
 
   publish:
-    needs: [test, sonarqube, codecov]
+    needs: [test, sonarqube, codecov, coveralls]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:

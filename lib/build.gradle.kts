@@ -5,6 +5,7 @@ plugins {
 
   alias(libs.plugins.sonarqube)
   alias(libs.plugins.spotless)
+  alias(libs.plugins.coveralls)
 }
 
 repositories { mavenCentral() }
