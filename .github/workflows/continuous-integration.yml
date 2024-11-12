@@ -26,7 +26,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
         run: ./gradlew :lib:build
@@ -51,7 +51,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run tests
         run: ./gradlew :lib:test :lib:jacocoTestReport
@@ -99,7 +99,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Download coverage reports
         uses: actions/download-artifact@v4
@@ -113,7 +113,7 @@ jobs:
         run: ./gradlew :lib:coveralls
 
   sonarqube:
-    needs: [ build, test ]
+    needs: [build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -128,7 +128,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Download build output
         uses: actions/download-artifact@v4
@@ -144,7 +144,7 @@ jobs:
         run: ./gradlew :lib:build :lib:sonar --info
 
   publish:
-    needs: [ test, sonarqube, codecov, coveralls ]
+    needs: [test, sonarqube, codecov, coveralls]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -172,7 +172,7 @@ jobs:
 
       - name: Setup Gradle
         if: steps.check_changes.outputs.has_code_changes == 'true'
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Calculate version
         if: steps.check_changes.outputs.has_code_changes == 'true'
