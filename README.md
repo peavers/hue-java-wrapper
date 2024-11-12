@@ -1,6 +1,6 @@
 # Java Philips Hue Client Library
 
-[![codecov](https://codecov.io/gh/peavers/hue-java-wrapper/graph/badge.svg?token=JRBL336RPE)](https://codecov.io/gh/peavers/hue-java-wrapper)
+![Codecov](https://img.shields.io/codecov/c/github/peavers/hue-java-wrapper?style=for-the-badge)
 
 
 A modern, intuitive Java library for controlling Philips Hue smart lighting systems. Built with dependency injection,
@@ -44,9 +44,9 @@ access the package.
 </repositories>
 
 <dependency>
-<groupId>space.forloop.hue</groupId>
-<artifactId>hue-java-wrapper</artifactId>
-<version>$latestVersion</version>
+   <groupId>space.forloop.hue</groupId>
+   <artifactId>hue-java-wrapper</artifactId>
+   <version>$latestVersion</version>
 </dependency>
 ```
 
