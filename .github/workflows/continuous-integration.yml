@@ -113,7 +113,7 @@ jobs:
         run: ./gradlew :lib:coveralls
 
   sonarqube:
-    needs: [build, test]
+    needs: [ build, test ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
         run: ./gradlew :lib:build :lib:sonar --info
 
   publish:
-    needs: [test, sonarqube, codecov, coveralls]
+    needs: [ test, sonarqube, codecov, coveralls ]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -152,7 +152,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check for code changes
+        id: check_changes
+        run: |
+          # Check if any .java files were changed
+          if git diff --name-only HEAD^ HEAD | grep -q "\.java$"; then
+            echo "has_code_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_code_changes=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up JDK 21
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -160,9 +171,11 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         uses: gradle/gradle-build-action@v3
 
       - name: Calculate version
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         id: calculate_version
         run: |
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
@@ -173,6 +186,7 @@ jobs:
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
 
       - name: Update version in build files
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         run: |
           new_version=${{ steps.calculate_version.outputs.new_version }}
           gradle_version=${new_version#v}
@@ -190,18 +204,21 @@ jobs:
           fi
 
       - name: Download build artifacts
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         uses: actions/download-artifact@v4
         with:
           name: build-output
           path: lib/build
 
       - name: Publish to GitHub Packages
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: ./gradlew :lib:publish
 
       - name: Create Release
+        if: steps.check_changes.outputs.has_code_changes == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/create-release@v1
