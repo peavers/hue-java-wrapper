@@ -31,7 +31,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew :lib:build
 
-      - name: Upload build artifacts
+      - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
           name: build-output
@@ -63,12 +63,6 @@ jobs:
           path: |
             lib/build/reports/jacoco/test/jacocoTestReport.xml
             lib/build/reports/coverage/
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: lib/build/reports/tests/
 
   codecov:
     needs: test
@@ -113,26 +107,12 @@ jobs:
           name: build-output
           path: lib/build
 
-      - name: Download coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report
-          path: lib/build/reports
-
       - name: Run Sonar analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          # Run the build again to ensure classes are available
-          ./gradlew :lib:classes :lib:testClasses
-          
-          # Run Sonar
-          ./gradlew :lib:sonar --info \
-            -Dsonar.java.binaries=lib/build/classes/java/main \
-            -Dsonar.java.test.binaries=lib/build/classes/java/test \
-            -Dsonar.coverage.jacoco.xmlReportPaths=lib/build/reports/jacoco/test/jacocoTestReport.xml
+        run: ./gradlew :lib:build :lib:sonar --info
 
   publish:
     needs: [test, sonarqube, codecov]
