@@ -29,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        run: ./gradlew :lib:build
+        run: ./gradlew :lib:build --scan
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
@@ -54,7 +54,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run tests
-        run: ./gradlew :lib:test :lib:jacocoTestReport
+        run: ./gradlew :lib:test :lib:jacocoTestReport --scan
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
@@ -110,7 +110,7 @@ jobs:
       - name: Upload to Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: ./gradlew :lib:coveralls
+        run: ./gradlew :lib:coveralls --scan
 
   sonarqube:
     needs: [build, test]
@@ -141,7 +141,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: ./gradlew :lib:build :lib:sonar --info
+        run: ./gradlew :lib:build :lib:sonar --scan
 
   publish:
     needs: [test, sonarqube, codecov, coveralls]
@@ -215,7 +215,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
-        run: ./gradlew :lib:publish
+        run: ./gradlew :lib:publish --scan
 
       - name: Create Release
         if: steps.check_changes.outputs.has_code_changes == 'true'
