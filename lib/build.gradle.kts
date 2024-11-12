@@ -71,7 +71,7 @@ testing {
   }
 }
 
-sonar { properties { property("sonar.projectKey", "peavers_hue_AZMMofhFBhOPJt8V40sH") } }
+sonar { properties { property("sonar.projectKey", "peavers_hue-java-wrapper_AZMg-M4W4NtnO15535QJ") } }
 
 spotless {
   java {

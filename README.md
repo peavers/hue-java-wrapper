@@ -3,6 +3,9 @@
 A modern, intuitive Java library for controlling Philips Hue smart lighting systems. Built with dependency injection,
 clean architecture principles, and comprehensive error handling to provide a robust and maintainable solution.
 
+Currently only supports basic features authentication and manipulating light state. Will add to this as requirements for
+downstream projects evolve, or people want something.
+
 ## Installation
 
 The library is available through GitHub Packages. You'll need to configure your build tool with GitHub authentication to
@@ -38,9 +41,9 @@ access the package.
 </repositories>
 
 <dependency>
-   <groupId>space.forloop.hue</groupId>
-   <artifactId>hue-java-wrapper</artifactId>
-   <version>$latestVersion</version>
+<groupId>space.forloop.hue</groupId>
+<artifactId>hue-java-wrapper</artifactId>
+<version>$latestVersion</version>
 </dependency>
 ```
 
