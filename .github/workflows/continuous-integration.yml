@@ -29,7 +29,7 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew :lib:build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -54,21 +54,21 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Run tests
-        run: ./gradlew test jacocoTestReport
+        run: ./gradlew :lib:test :lib:jacocoTestReport
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: |
-            build/reports/jacoco/test/jacocoTestReport.xml
-            build/reports/coverage/
+            lib/build/reports/jacoco/test/jacocoTestReport.xml
+            lib/build/reports/coverage/
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: build/reports/tests/
+          path: lib/build/reports/tests/
 
   codecov:
     needs: test
@@ -80,13 +80,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: build/reports
+          path: lib/build/reports # Match the expected path structure
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: build/reports/jacoco/test/jacocoTestReport.xml
+          file: lib/build/reports/jacoco/test/jacocoTestReport.xml
           fail_ci_if_error: true
 
   sonarqube:
@@ -111,14 +111,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: build/reports
+          path: lib/build/reports # Match the expected path structure
 
       - name: Sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: ./gradlew sonar --info
+        run: ./gradlew :lib:sonar --info
 
   publish:
     needs: [test, sonarqube, codecov]
@@ -176,7 +176,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
-        run: ./gradlew publish
+        run: ./gradlew :lib:publish
 
       - name: Create Release
         env:
