@@ -1,5 +1,8 @@
 # Java Philips Hue Client Library
 
+[![codecov](https://codecov.io/gh/peavers/hue-java-wrapper/graph/badge.svg?token=JRBL336RPE)](https://codecov.io/gh/peavers/hue-java-wrapper)
+
+
 A modern, intuitive Java library for controlling Philips Hue smart lighting systems. Built with dependency injection,
 clean architecture principles, and comprehensive error handling to provide a robust and maintainable solution.
 
